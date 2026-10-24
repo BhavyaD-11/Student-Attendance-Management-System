@@ -1,11 +1,20 @@
+
 package com.attendance.frontend;
 
-import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import com.attendance.model.Student;
+import com.attendance.service.LoginService;
 
-public class Loginframe extends JFrame {
-    public Loginframe() {
+import javax.swing.*;
+
+public class LoginFrame extends JFrame {
+
+    private JTextField userText;
+    private JPasswordField passText;
+    private LoginService loginService;
+
+    public LoginFrame() {
+        loginService = new LoginService();
+
         setTitle("Login - Student Attendance System");
         setSize(400, 300);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -16,7 +25,7 @@ public class Loginframe extends JFrame {
         userLabel.setBounds(50, 50, 100, 25);
         add(userLabel);
 
-        JTextField userText = new JTextField();
+        userText = new JTextField();
         userText.setBounds(150, 50, 180, 25);
         add(userText);
 
@@ -24,7 +33,7 @@ public class Loginframe extends JFrame {
         passLabel.setBounds(50, 100, 100, 25);
         add(passLabel);
 
-        JPasswordField passText = new JPasswordField();
+        passText = new JPasswordField();
         passText.setBounds(150, 100, 180, 25);
         add(passText);
 
@@ -32,15 +41,33 @@ public class Loginframe extends JFrame {
         loginButton.setBounds(150, 150, 100, 30);
         add(loginButton);
 
-        loginButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                JOptionPane.showMessageDialog(null, "Login Successful!");
-            }
-        });
+        loginButton.addActionListener(e -> validateLogin());
+    }
+
+    private void validateLogin() {
+        String username = userText.getText().trim();
+        String password = new String(passText.getPassword());
+
+        Student student = loginService.login(username, password);
+
+        if (student != null) {
+            JOptionPane.showMessageDialog(
+                this,
+                "Login successful! Welcome, " + student.getStudentName()
+            );
+        } else {
+            JOptionPane.showMessageDialog(
+                this,
+                "Invalid username or password!",
+                "Login Failed",
+                JOptionPane.ERROR_MESSAGE
+            );
+        }
     }
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> new Loginframe().setVisible(true));
+        SwingUtilities.invokeLater(() ->
+            new LoginFrame().setVisible(true)
+        );
     }
 }
